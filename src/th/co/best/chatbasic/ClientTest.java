@@ -21,8 +21,9 @@ import java.util.Scanner;
  */
 public class ClientTest {
 
+    
     public static void main(String[] args) throws IOException {
-        Socket socket = new Socket("192.168.43.10", 9091);
+        Socket socket = new Socket("192.168.1.101", 9091);
         String modifierSentence = null;
         BufferedReader bufferedReader = null;
         DataOutputStream dataOutputStream = null;

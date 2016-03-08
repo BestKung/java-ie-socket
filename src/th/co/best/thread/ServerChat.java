@@ -82,7 +82,7 @@ public class ServerChat implements Runnable {
                     if ((output.charAt(0) == 'f' || output.charAt(0) == 'F') && output.length() == 1) {
                         String fileInformation = reseived.readLine();
                         String spt_file[] = fileInformation.split("&&");
-                        File file = new File("F:\\" + spt_file[1]);
+                        File file = new File("/Users/engineer/Desktop/tmpFile/" + spt_file[1]);
                         System.out.println(new ManageFile().reseivedFile(file, inputFile, Long.parseLong(spt_file[0])));
 
                     } else {

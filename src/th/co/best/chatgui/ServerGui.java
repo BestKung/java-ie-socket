@@ -9,8 +9,10 @@ import java.awt.Color;
 import java.awt.event.KeyEvent;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
@@ -26,6 +28,7 @@ import javax.swing.text.BadLocationException;
 import javax.swing.text.SimpleAttributeSet;
 import javax.swing.text.StyleConstants;
 import javax.swing.text.StyledDocument;
+import static th.co.best.chatgui.ClientGui.path;
 import static th.co.best.chatgui.ClientGui.resived;
 import static th.co.best.chatgui.ClientGui.socket;
 import th.co.best.chatgui.ManageFile;
@@ -179,9 +182,9 @@ public class ServerGui extends javax.swing.JFrame {
                 printWriter.println("file@" + file.getName() + "@" + file.length());
                 StyleConstants.setBackground(style, Color.decode("#fff176"));
                 StyleConstants.setBold(style, true);
-                doc.insertString(doc.getLength(), "\n" + new socketchatie.ClientGui().sendFile(file, dataOutputStream), style);
+                doc.insertString(doc.getLength(), "\n" + sendFile(file, dataOutputStream), style);
             } catch (IOException ex) {
-                Logger.getLogger(socketchatie.ClientGui.class.getName()).log(Level.SEVERE, null, ex);
+               
             } catch (BadLocationException ex) {
                 Logger.getLogger(ServerGui.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -249,7 +252,7 @@ public class ServerGui extends javax.swing.JFrame {
                 new ServerGui().setVisible(true);
             }
         });
-        pathDefault = "F:\\";
+        pathDefault = "/Users/engineer/Desktop/tmpFile/";
         serverSocket = new ServerSocket(1111);
         socket = serverSocket.accept();
         resived = new BufferedReader(new InputStreamReader(socket.getInputStream()));
@@ -259,14 +262,15 @@ public class ServerGui extends javax.swing.JFrame {
         }
         inputFile = new DataInputStream(socket.getInputStream());
         while (true) {
+            String countNmae = (new File(pathDefault).list().length > 0) ? new File(pathDefault).list().length+"" : "";
             message = resived.readLine();
             if (message.contains("file@")) {
                 String spt_file[] = message.split("@");
                 String fileName = spt_file[1];
-                File file = new File(pathDefault + fileName);
+                File file = new File(pathDefault +countNmae+ fileName);
                 System.out.println(new ManageFile().reseivedFile(file, inputFile, Long.parseLong(spt_file[2])));
                 if ((fileName.substring(fileName.length() - 3, fileName.length()).equalsIgnoreCase("jpg")) || (fileName.substring(fileName.length() - 3, fileName.length()).equalsIgnoreCase("png"))) {
-                    FromDialogShowImage dialogShowImage = new FromDialogShowImage(pathDefault + fileName);
+                    FromDialogShowImage dialogShowImage = new FromDialogShowImage(pathDefault +countNmae+ fileName);
                     dialogShowImage.setVisible(true);
                     StyleConstants.setBackground(style, Color.decode("#80deea"));
                     StyleConstants.setBold(style, true);
@@ -287,6 +291,20 @@ public class ServerGui extends javax.swing.JFrame {
 
     }
 
+    public String sendFile(File file, DataOutput send) {
+        try {
+            DataInputStream inputFile = new DataInputStream(new FileInputStream(file));
+            byte[] buffer = new byte[1024];
+            int len = -1;
+            while ((len = inputFile.read(buffer)) != -1) {
+                send.write(buffer, 0, len);
+            }
+            return "Send Success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Send Faile";
+        }
+    }
 
     // Variables declaration - do not modify//GEN-BEGIN:variables
     private javax.swing.JButton btnImage;

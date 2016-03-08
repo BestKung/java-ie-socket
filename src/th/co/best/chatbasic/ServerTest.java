@@ -42,7 +42,7 @@ public class ServerTest {
 
                 outputStream.writeBytes("Request Complete \n");
                 dataInputStream = new DataInputStream(socket.getInputStream());
-                fileName = "F:\\" + findName(fileName);
+                fileName = "/Users/engineer/Desktop/tmpFile/" + findName(fileName);
                 File file = new File(fileName);
                 outputStream1 = new DataOutputStream(new FileOutputStream(file));
                 byte[] buffer = new byte[1024];

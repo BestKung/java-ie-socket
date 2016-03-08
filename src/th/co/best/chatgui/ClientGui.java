@@ -10,8 +10,10 @@ import java.awt.event.KeyEvent;
 import java.io.BufferedInputStream;
 import java.io.BufferedReader;
 import java.io.DataInputStream;
+import java.io.DataOutput;
 import java.io.DataOutputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
@@ -178,9 +180,9 @@ public class ClientGui extends javax.swing.JFrame {
                 printWriter.println("file@" + file.getName() + "@" + file.length());
                 StyleConstants.setBackground(style, Color.decode("#fff176"));
                 StyleConstants.setBold(style, true);
-                doc.insertString(doc.getLength(), "\n" + new socketchatie.ClientGui().sendFile(file, dataOutputStream), style);
+                doc.insertString(doc.getLength(), "\n" + sendFile(file, dataOutputStream), style);
             } catch (IOException ex) {
-                Logger.getLogger(socketchatie.ClientGui.class.getName()).log(Level.SEVERE, null, ex);
+                
             } catch (BadLocationException ex) {
                 Logger.getLogger(ServerGui.class.getName()).log(Level.SEVERE, null, ex);
             }
@@ -248,12 +250,14 @@ public class ClientGui extends javax.swing.JFrame {
                 new ClientGui().setVisible(true);
             }
         });
-        ip = "localhost";
+        path = "/Users/engineer/Desktop/tmpFile/";
+        ip = "192.168.1.101";
         socket = new Socket(ip, 1111);
         resived = new BufferedReader(new InputStreamReader(socket.getInputStream()));
         inputFile = new DataInputStream(socket.getInputStream());
         while (true) {
-            message = resived.readLine();
+           String countNmae = (new File(path).list().length > 0) ? new File(path).list().length+"" : "";
+            message = resived.readLine(); 
             if (message.contains("file@")) {
                 String spt_file[] = message.split("@");
                 String fileName = spt_file[1];
@@ -277,6 +281,21 @@ public class ClientGui extends javax.swing.JFrame {
                 doc.insertString(doc.getLength(), "\n Server : " + message, style);
             }
 
+        }
+    }
+    
+    public String sendFile(File file, DataOutput send) {
+        try {
+            DataInputStream inputFile = new DataInputStream(new FileInputStream(file));
+            byte[] buffer = new byte[1024];
+            int len = -1;
+            while ((len = inputFile.read(buffer)) != -1) {
+                send.write(buffer, 0, len);
+            }
+            return "Send Success";
+        } catch (Exception e) {
+            e.printStackTrace();
+            return "Send Faile";
         }
     }
 
